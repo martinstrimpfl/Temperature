@@ -13,14 +13,14 @@ namespace Weather
         public static void Main()
         {
             var cities = Enum.GetValues(typeof(City)).Cast<City>().ToList();
-            var temperatureService = new TemperatureService();
+            var temperatureWriter = new TemperatureWriter();
 
             do
             {
                 Console.WriteLine("Actual temperature in selected cities:");
                 foreach (var city in cities)
                 {
-                    Console.WriteLine("{0,-10}: {1} C", city, temperatureService.GetTemperature(city));
+                    temperatureWriter.WriteTemperature(Console.Out, city);
                 }
                 Console.WriteLine("Press Enter to refresh, any other key to exit.");
             }
