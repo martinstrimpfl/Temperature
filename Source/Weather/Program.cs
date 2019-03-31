@@ -13,7 +13,7 @@ namespace Weather
         public static void Main()
         {
             var cities = Enum.GetValues(typeof(City)).Cast<City>().ToList();
-            var temperatureWriter = new TemperatureWriter();
+            var temperatureWriter = new TemperatureWriter(Console.Out);
 
             do
             {

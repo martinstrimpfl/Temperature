@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 using WeatherService;
 
@@ -7,8 +6,13 @@ namespace Weather
 {
     public class TemperatureWriter : ITemperatureWriter
     {
-        private readonly TextWriter writer = Console.Out;
+        private readonly TextWriter writer;
         private readonly ITemperatureProvider temperatureProvider = new TemperatureCacheProvider();
+
+        public TemperatureWriter(TextWriter writer)
+        {
+            this.writer = writer;
+        }
 
         public void WriteTemperature(City city)
         {

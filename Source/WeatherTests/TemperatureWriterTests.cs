@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Text;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using WeatherService;
 
 namespace Weather.Tests
@@ -11,14 +13,14 @@ namespace Weather.Tests
         [TestMethod()]
         public void WriteTemperatureTest()
         {
-            // Arrange
-            var writeTemperature = new TemperatureWriter();
+            // Arrange      
             var stringBuilder = new StringBuilder();
 
             // Act
             using (var writer = new StringWriter(stringBuilder))
             {
-                writeTemperature.WriteTemperature(writer, City.Brno);
+                var writeTemperature = new TemperatureWriter(writer);
+                writeTemperature.WriteTemperature(City.Brno);
             }
 
             // Assert
