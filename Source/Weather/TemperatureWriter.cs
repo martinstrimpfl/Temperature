@@ -1,36 +1,18 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Caching;
 
 using WeatherService;
 
 namespace Weather
 {
-    public class TemperatureWriter
+    public class TemperatureWriter : ITemperatureWriter
     {
-        private readonly TemperatureService temperatureService = new TemperatureService();
-        private MemoryCache cache = MemoryCache.Default;
+        private readonly TextWriter writer = Console.Out;
+        private readonly ITemperatureProvider temperatureProvider = new TemperatureCacheProvider();
 
-        public void WriteTemperature(TextWriter writer, City city)
+        public void WriteTemperature(City city)
         {
-            if(writer == null)
-            {
-                return;
-            }
-            var key = city.ToString();
-            int temperature = 0;
-
-            if(cache.Contains(key))
-            {
-                temperature = (int)cache.Get(key);
-            }
-            else
-            {
-                temperature = temperatureService.GetTemperature(city);
-                cache.Add(key, temperature, DateTimeOffset.UtcNow.AddSeconds(5));
-            }
-            
-            writer.WriteLine("{0,-10}: {1} °C", city, temperature);
+            writer.WriteLine("{0,-10}: {1}°C", city, temperatureProvider.GetTemperature(city));
         }
     }
 }

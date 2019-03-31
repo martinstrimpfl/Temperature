@@ -20,7 +20,7 @@ namespace Weather
                 Console.WriteLine("Actual temperature in selected cities:");
                 foreach (var city in cities)
                 {
-                    temperatureWriter.WriteTemperature(Console.Out, city);
+                    temperatureWriter.WriteTemperature(city);
                 }
                 Console.WriteLine("Press Enter to refresh, any other key to exit.");
             }
