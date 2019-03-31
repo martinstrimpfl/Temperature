@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-
+using System.Runtime.Caching;
 using WeatherService;
 
 namespace Weather
@@ -13,7 +13,13 @@ namespace Weather
         public static void Main()
         {
             var cities = Enum.GetValues(typeof(City)).Cast<City>().ToList();
-            var temperatureWriter = new TemperatureWriter(Console.Out);
+            var temperatureProvider = 
+                new TemperatureCacheProvider(
+                    MemoryCache.Default, 
+                    new TemperatureDirectProvider(
+                        new TemperatureService()));
+
+            var temperatureWriter = new TemperatureWriter(Console.Out, temperatureProvider);
 
             do
             {

@@ -7,8 +7,14 @@ namespace Weather
 {
     public class TemperatureCacheProvider : ITemperatureProvider
     {
-        private MemoryCache cache = MemoryCache.Default;
-        private ITemperatureProvider temperatureProvider = new TemperatureDirectProvider();
+        private MemoryCache cache;
+        private ITemperatureProvider temperatureProvider;
+
+        public TemperatureCacheProvider(MemoryCache cache, ITemperatureProvider temperatureProvider)
+        {
+            this.cache = cache;
+            this.temperatureProvider = temperatureProvider;
+        }
 
         public int GetTemperature(City city)
         {

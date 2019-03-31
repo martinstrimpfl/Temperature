@@ -1,7 +1,8 @@
 ﻿using System.IO;
-using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Moq;
 
 using WeatherService;
 
@@ -13,18 +14,31 @@ namespace Weather.Tests
         [TestMethod()]
         public void WriteTemperatureTest()
         {
-            // Arrange      
-            var stringBuilder = new StringBuilder();
+            // Arrange 
+            var template = string.Empty;
+            var temperature = 0;
+
+            var temperatureProvider = new Mock<ITemperatureProvider>(MockBehavior.Strict);
+            var writer = new Mock<TextWriter>(MockBehavior.Strict);
+            writer
+                .Setup(m => 
+                    m.WriteLine(
+                        It.IsAny<string>(), 
+                        It.IsAny<City>(),  
+                        It.IsAny<int>()))
+                .Callback<string, object, object>((f,c,t) => { template = f; temperature = (int)t; });
+
+            temperatureProvider
+                .Setup(m => m.GetTemperature(It.IsAny<City>())).Returns(25);
+
+            var writeTemperature = new TemperatureWriter(writer.Object, temperatureProvider.Object);
 
             // Act
-            using (var writer = new StringWriter(stringBuilder))
-            {
-                var writeTemperature = new TemperatureWriter(writer);
-                writeTemperature.WriteTemperature(City.Brno);
-            }
+            writeTemperature.WriteTemperature(City.Brno);
 
             // Assert
-            Assert.IsTrue(stringBuilder.ToString().Contains("°C"));
+            Assert.IsTrue(template.Contains("°C"));
+            Assert.AreEqual(25, temperature);
         }
     }
 }

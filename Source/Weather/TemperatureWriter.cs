@@ -7,11 +7,12 @@ namespace Weather
     public class TemperatureWriter : ITemperatureWriter
     {
         private readonly TextWriter writer;
-        private readonly ITemperatureProvider temperatureProvider = new TemperatureCacheProvider();
+        private readonly ITemperatureProvider temperatureProvider;
 
-        public TemperatureWriter(TextWriter writer)
+        public TemperatureWriter(TextWriter writer, ITemperatureProvider temperatureProvider)
         {
             this.writer = writer;
+            this.temperatureProvider = temperatureProvider;
         }
 
         public void WriteTemperature(City city)
