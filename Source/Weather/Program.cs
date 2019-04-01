@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
+using Autofac;
 using WeatherService;
 
 namespace Weather
@@ -13,24 +15,32 @@ namespace Weather
         public static void Main()
         {
             var cities = Enum.GetValues(typeof(City)).Cast<City>().ToList();
-            var temperatureProvider = 
-                new TemperatureCacheProvider(
-                    MemoryCache.Default, 
-                    new TemperatureDirectProvider(
-                        new TemperatureService()));
 
-            var temperatureWriter = new TemperatureWriter(Console.Out, temperatureProvider);
+            var builder = new ContainerBuilder();
 
-            do
+            builder.RegisterType<TemperatureDirectProvider>().As<ITemperatureProvider>();
+            builder.RegisterType<TemperatureService>();
+            builder.RegisterType<TemperatureCacheProvider>().As<ITemperatureProvider>();
+            builder.RegisterType<TemperatureWriter>().As<ITemperatureWriter>();
+            builder.RegisterInstance(MemoryCache.Default).As<MemoryCache>();
+            builder.RegisterInstance(Console.Out).As<TextWriter>();
+
+            var container = builder.Build();
+
+            using (var scope = container.BeginLifetimeScope())
             {
-                Console.WriteLine("Actual temperature in selected cities:");
-                foreach (var city in cities)
+                var temperatureWriter = scope.Resolve<ITemperatureWriter>();
+                do
                 {
-                    temperatureWriter.WriteTemperature(city);
+                    Console.WriteLine("Actual temperature in selected cities:");
+                    foreach (var city in cities)
+                    {
+                        temperatureWriter.WriteTemperature(city);
+                    }
+                    Console.WriteLine("Press Enter to refresh, any other key to exit.");
                 }
-                Console.WriteLine("Press Enter to refresh, any other key to exit.");
+                while (Console.ReadKey(true).Key == ConsoleKey.Enter);
             }
-            while (Console.ReadKey(true).Key == ConsoleKey.Enter);    
         }
     }
 }
