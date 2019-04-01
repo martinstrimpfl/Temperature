@@ -3,7 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
+
 using Autofac;
+
 using WeatherService;
 
 namespace Weather
@@ -18,9 +20,16 @@ namespace Weather
 
             var builder = new ContainerBuilder();
 
-            builder.RegisterType<TemperatureDirectProvider>().As<ITemperatureProvider>();
+            builder.RegisterType<TemperatureDirectProvider>().AsSelf().As<ITemperatureProvider>();
             builder.RegisterType<TemperatureService>();
-            builder.RegisterType<TemperatureCacheProvider>().As<ITemperatureProvider>();
+
+            builder
+                .Register(c => 
+                    new TemperatureCacheProvider(
+                        c.Resolve<MemoryCache>(), 
+                        c.Resolve<TemperatureDirectProvider>()))
+                .As<ITemperatureProvider>();
+
             builder.RegisterType<TemperatureWriter>().As<ITemperatureWriter>();
             builder.RegisterInstance(MemoryCache.Default).As<MemoryCache>();
             builder.RegisterInstance(Console.Out).As<TextWriter>();
