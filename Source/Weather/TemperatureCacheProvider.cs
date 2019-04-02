@@ -7,10 +7,10 @@ namespace Weather
 {
     public class TemperatureCacheProvider : ITemperatureProvider
     {
-        private MemoryCache cache;
+        private ObjectCache cache;
         private ITemperatureProvider temperatureProvider;
 
-        public TemperatureCacheProvider(MemoryCache cache, ITemperatureProvider temperatureProvider)
+        public TemperatureCacheProvider(ObjectCache cache, ITemperatureProvider temperatureProvider)
         {
             this.cache = cache;
             this.temperatureProvider = temperatureProvider;

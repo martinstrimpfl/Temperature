@@ -13,21 +13,20 @@ namespace Weather
     internal static class Program
     {
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)", Justification = "Demo")]
-        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String,System.Object,System.Object)", Justification = "Demo")]
         public static void Main()
         {
             var cities = Enum.GetValues(typeof(City)).Cast<City>().ToList();
 
             var builder = new ContainerBuilder();
 
-            builder.RegisterType<TemperatureDirectProvider>().AsSelf().As<ITemperatureProvider>();
+            builder.RegisterType<TemperatureDirectProvider>().Named<ITemperatureProvider>("direct");
             builder.RegisterType<TemperatureService>();
 
             builder
                 .Register(c => 
                     new TemperatureCacheProvider(
                         c.Resolve<MemoryCache>(), 
-                        c.Resolve<TemperatureDirectProvider>()))
+                        c.ResolveNamed<ITemperatureProvider>("direct")))
                 .As<ITemperatureProvider>();
 
             builder.RegisterType<TemperatureWriter>().As<ITemperatureWriter>();
